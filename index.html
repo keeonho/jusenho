@@ -1,0 +1,663 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Carson for Jusenho</title>
+<meta name="description" content="Carson's application to join dorm Jusenho.">
+<meta name="theme-color" content="#cf4f00">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@700&family=Pirata+One&family=Roboto:ital,wght@0,400;0,700;0,900;1,400;1,700;1,900&display=swap" rel="stylesheet">
+<link rel="preload" as="image" href="img/trio1.webp">
+<style>
+:root{
+  --orange:#cf4f00; --orange-deep:#b84400; --hot:#ff6a13; --yellow:#f7c948;
+  --ink:#141210; --paper:#f4efe6; --white:#fbfaf7;
+  --shadow:6px 9px 16px rgba(60,18,0,.45);
+  --gutter:16px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{background:var(--orange);-webkit-text-size-adjust:100%}
+html.lenis,html.lenis body{height:auto}
+.lenis.lenis-smooth{scroll-behavior:auto!important}
+body{background:var(--orange);color:var(--white);font-family:Roboto,system-ui,sans-serif;overflow-x:hidden;min-height:100dvh}
+img,video{display:block;max-width:100%}
+button{font:inherit;cursor:pointer}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.ic{width:1em;height:1em;flex:none}
+
+/* paper grain, fixed so it never repaints with scroll */
+body::after{content:"";position:fixed;inset:-50%;z-index:90;pointer-events:none;opacity:.16;mix-blend-mode:multiply;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation:grain .5s steps(1) infinite}
+@keyframes grain{0%{transform:translate(0,0)}25%{transform:translate(-3%,2%)}50%{transform:translate(2%,-3%)}75%{transform:translate(-2%,-1%)}}
+
+/* ---------- the jusenho visual language ---------- */
+.wm{font-family:"Pirata One",serif;font-weight:400;color:var(--white);line-height:.9;letter-spacing:.01em;
+  -webkit-text-stroke:2px var(--ink);paint-order:stroke fill;
+  text-shadow:3px 4px 0 var(--ink),0 10px 22px rgba(40,10,0,.35)}
+.ar{font-family:"Aref Ruqaa",serif;font-weight:700;color:var(--white);direction:rtl;
+  -webkit-text-stroke:1px var(--ink);paint-order:stroke fill;text-shadow:2px 3px 0 var(--ink)}
+.lbl{font-style:italic;font-weight:400;color:var(--white);text-shadow:0 2px 8px rgba(60,18,0,.4)}
+.fr{position:absolute;border:3px solid var(--ink);background:#777;box-shadow:var(--shadow);overflow:hidden}
+.fr img{width:100%;height:100%;object-fit:cover}
+.ol{position:absolute;border:2px solid var(--white)}
+.ol.y{border-color:var(--yellow)} .ol.k{border-color:var(--ink);border-width:3px}
+.blk{position:absolute;background:var(--hot);box-shadow:4px 6px 12px rgba(60,18,0,.3)}
+.tape{position:absolute;width:74px;height:22px;background:rgba(244,239,230,.72);box-shadow:0 1px 3px rgba(0,0,0,.2);z-index:3}
+.jit{animation:jit .45s steps(1) infinite}
+@keyframes jit{0%{transform:translate(0,0) rotate(0)}33%{transform:translate(.6px,-.8px) rotate(.25deg)}66%{transform:translate(-.7px,.5px) rotate(-.3deg)}}
+.boil{animation:boil .42s steps(1) infinite}
+@keyframes boil{0%{filter:url(#b1)}33%{filter:url(#b2)}66%{filter:url(#b3)}}
+.doodle{position:absolute;overflow:visible;pointer-events:none;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.doodle path{stroke-dasharray:1;stroke-dashoffset:1}
+.btn{text-decoration:none;display:inline-flex;align-items:center;gap:.6em;border:3px solid var(--ink);background:var(--yellow);color:var(--ink);
+  font-weight:900;font-style:italic;text-transform:lowercase;font-size:1.05rem;padding:.8em 1.2em;white-space:nowrap;
+  box-shadow:4px 5px 0 var(--ink);transition:transform .15s cubic-bezier(.16,1,.3,1),box-shadow .15s}
+.btn:hover{transform:translate(-2px,-2px);box-shadow:6px 7px 0 var(--ink)}
+.btn:active{transform:translate(3px,4px);box-shadow:1px 1px 0 var(--ink)}
+.btn:focus-visible{outline:3px solid var(--white);outline-offset:3px}
+
+/* ---------- intro loader ---------- */
+#intro{position:fixed;inset:0;z-index:80;background:var(--orange);display:grid;place-items:center;align-content:center;gap:28px;padding:var(--gutter)}
+#intro .flip{position:relative;width:min(56vw,250px);aspect-ratio:3/4}
+#intro .flip .fr{inset:0}
+#intro .flip .ol{inset:-14px 18px 30px -18px}
+#intro .flip .ol.y{inset:26px -16px -16px 22px}
+#intro .who{font-size:clamp(3rem,13vw,5rem);text-align:center}
+#intro .count{font-style:italic;font-size:.95rem;text-align:center;min-height:1.2em}
+
+/* ---------- hero ---------- */
+#hero{min-height:100dvh;display:grid;grid-template-columns:1fr;gap:36px;align-items:center;
+  padding:88px var(--gutter) 64px;max-width:1280px;margin:0 auto;position:relative}
+.hero-copy{position:relative;z-index:2;max-width:34rem}
+.hero-copy .lbl{font-size:1.05rem;margin-bottom:10px}
+.hero-copy h1{font-size:clamp(3.6rem,15vw,7.2rem);margin-bottom:18px}
+.hero-copy p{font-size:1.08rem;line-height:1.55;max-width:30ch;margin-bottom:26px;color:var(--white)}
+.collage{position:relative;width:min(92vw,470px);aspect-ratio:4/5;justify-self:center}
+.collage .hero-wm{position:absolute;left:5%;top:69%;font-size:clamp(3.4rem,17vw,5.6rem);z-index:5}
+.collage .hero-wm2{position:absolute;right:2%;top:86%;font-size:clamp(2rem,9vw,3rem);z-index:5}
+.collage .hero-ar{position:absolute;left:31%;top:5.5%;font-size:clamp(1.6rem,7vw,2.4rem);z-index:5}
+.collage .tag{position:absolute;font-size:.95rem;z-index:5}
+@media (min-width:900px){
+  #hero{grid-template-columns:1fr 1.05fr;padding-top:64px}
+  .collage{justify-self:end;width:min(46vw,600px)}
+  .collage .hero-wm{font-size:6.6rem} .collage .hero-wm2{font-size:3.4rem}
+}
+
+/* ---------- 3D tunnel ---------- */
+#tunnel{position:relative;height:100dvh;overflow:hidden}
+#tunnel canvas{position:absolute;inset:0;width:100%!important;height:100%!important}
+#tunnel .lines{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none;padding:var(--gutter);text-align:center}
+#tunnel .line{grid-area:1/1;font-size:clamp(2.6rem,11vw,6.4rem);opacity:0;max-width:14ch}
+#tunnel .line .lbl{display:block;font-family:Roboto,sans-serif;-webkit-text-stroke:0;font-size:1.05rem;margin-top:14px;text-shadow:0 2px 8px rgba(0,0,0,.45)}
+
+/* ---------- about ---------- */
+#me{position:relative;padding:96px var(--gutter) 120px;max-width:1280px;margin:0 auto;display:grid;gap:56px}
+.sec-h{display:flex;align-items:flex-end;gap:18px;flex-wrap:wrap}
+.sec-h .wm{font-size:clamp(3.4rem,14vw,7rem)}
+.sec-h .ar{font-size:clamp(1.8rem,7vw,3rem);padding-bottom:.35em}
+.me-grid{display:grid;gap:56px;align-items:center}
+.reel{position:relative;width:min(84vw,430px);aspect-ratio:4/5;justify-self:center}
+.reel .fr{inset:0;background:var(--ink)}
+.reel video{width:100%;height:100%;object-fit:cover}
+.reel .ol{inset:-18px 22px 40px -22px} .reel .ol.y{inset:36px -20px -22px 30px}
+.reel .blk{left:-8%;bottom:-6%;width:46%;height:12%;z-index:2;display:flex;align-items:center;justify-content:center}
+.reel .blk .lbl{font-size:.95rem}
+.reel .tape{top:-10px;left:50%;transform:translateX(-50%) rotate(-4deg)}
+.idcard{display:grid;gap:34px}
+.row{position:relative}
+.row .lbl{font-size:1.05rem;display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.row .val{position:relative;display:inline-block;font-size:clamp(3.4rem,15vw,6.4rem)}
+.row .val .doodle{inset:-22% -12% -26% -10%;width:124%;height:150%}
+.row .val .doodle.under{inset:auto -4% -26% -4%;width:108%;height:40%}
+.row .val .ic{font-size:.5em;vertical-align:middle;color:var(--yellow);filter:drop-shadow(2px 3px 0 var(--ink))}
+.scatter{position:absolute;inset:0;pointer-events:none;z-index:-1}
+.scatter .fr{width:clamp(90px,20vw,170px);aspect-ratio:3/4}
+@media (min-width:900px){ .me-grid{grid-template-columns:1fr 1fr} }
+
+/* ---------- wishes (horizontal) ---------- */
+#wishes{position:relative;height:100dvh;overflow:hidden;background:var(--orange-deep)}
+.wtrack{position:absolute;top:0;left:0;height:100%;display:flex;align-items:center;gap:clamp(28px,5vw,64px);padding:0 12vw 0 var(--gutter);will-change:transform}
+.wtrack::before,.wtrack::after{content:"";position:absolute;left:0;right:0;height:2px;background:var(--yellow);transform-origin:left;transform:scaleX(var(--p,0))}
+.wtrack::before{top:13%} .wtrack::after{bottom:13%;background:var(--white)}
+.wtitle{flex:none;width:min(86vw,520px);position:relative}
+.wtitle .wm{font-size:clamp(4rem,19vw,8.4rem)}
+.wtitle .ar{font-size:clamp(2rem,8vw,3.2rem);display:block;margin-top:8px;text-align:left}
+.wtitle .lbl{font-size:1.05rem;margin-top:18px;display:block}
+.wish{flex:none;position:relative;width:min(74vw,330px);aspect-ratio:3/4;background:var(--paper);color:var(--ink);border:3px solid var(--ink);
+  box-shadow:var(--shadow);padding:22px 20px;display:flex;flex-direction:column;justify-content:space-between}
+.wish:nth-child(4n+1){rotate:-2deg} .wish:nth-child(4n+3){rotate:1.5deg}
+.wish .n{font-family:"Pirata One",serif;font-size:4.4rem;line-height:.8;color:var(--orange)}
+.wish .badge{position:absolute;top:18px;right:18px;width:62px;height:62px;border-radius:50%;background:var(--yellow);border:3px solid var(--ink);
+  display:grid;place-items:center;font-size:30px;box-shadow:3px 4px 0 var(--ink)}
+.wish .stk{position:absolute;left:50%;top:47%;width:46%;aspect-ratio:3/4;translate:-50% -50%;rotate:4deg;border:3px solid var(--ink);box-shadow:3px 4px 0 var(--ink);background:#ddd}
+.wish:nth-child(odd) .stk{rotate:-5deg}
+.wish .stk img{width:100%;height:100%;object-fit:cover}
+.wish .stk .tape{top:-11px;left:50%;translate:-50% 0;rotate:-6deg;width:60px;height:18px}
+.wish p{font-weight:900;font-style:italic;font-size:clamp(1.6rem,7vw,2.1rem);line-height:1.02;text-transform:uppercase;letter-spacing:-.01em}
+.wish .lbl{color:var(--ink);text-shadow:none;font-size:.9rem;opacity:.75}
+.wphoto{flex:none;position:relative;width:min(62vw,280px);aspect-ratio:3/4}
+.wphoto .fr{inset:0}
+.wphoto.tall{width:min(58vw,250px);aspect-ratio:2/3}
+.wphoto .ol{inset:-14px 16px 28px -16px}
+.wphoto .lbl{position:absolute;bottom:-34px;left:0;font-size:.95rem}
+.wend{flex:none;width:min(80vw,380px)}
+.wend .wm{font-size:clamp(3rem,13vw,5rem)}
+
+/* ---------- promises (sticky stack) ---------- */
+#promise{position:relative;padding:96px var(--gutter) 40px;max-width:1100px;margin:0 auto}
+#promise .sec-h{margin-bottom:10px}
+#promise .sub{font-size:1.1rem;margin-bottom:48px;display:block}
+.stack{position:relative}
+.pcard{position:sticky;top:calc(12dvh + var(--i) * 16px);min-height:70dvh;margin-bottom:12dvh;border:3px solid var(--ink);box-shadow:var(--shadow);
+  display:grid;grid-template-rows:auto 1fr;overflow:hidden;transform-origin:center top;background:var(--hot);color:var(--ink)}
+.pcard:last-child{margin-bottom:0}
+.pcard.c2{background:var(--yellow)} .pcard.c3{background:var(--paper)} .pcard.c4{background:var(--ink);color:var(--white)} .pcard.c5{background:var(--white)}
+.pcard .ph{position:relative;height:34dvh;border-bottom:3px solid var(--ink);overflow:hidden}
+.pcard .ph img{width:100%;height:100%;object-fit:cover}
+.pcard .body{padding:22px 20px 26px;display:flex;flex-direction:column;justify-content:space-between;gap:18px}
+.pcard .top{display:flex;justify-content:space-between;align-items:flex-start}
+.pcard .n{font-family:"Pirata One",serif;font-size:4.6rem;line-height:.75}
+.pcard .ic{font-size:44px}
+.pcard p{font-weight:900;font-style:italic;text-transform:uppercase;font-size:clamp(2rem,9vw,4rem);line-height:.98;letter-spacing:-.015em}
+@media (min-width:900px){
+  .pcard{grid-template-rows:none;grid-template-columns:1.1fr 1fr;min-height:62dvh}
+  .pcard .ph{height:auto;border-bottom:0;border-right:3px solid var(--ink);order:0}
+  .pcard .body{padding:36px}
+}
+
+/* ---------- ask ---------- */
+#ask{position:relative;min-height:100dvh;padding:96px var(--gutter) 64px;display:grid;align-content:center;justify-items:center;text-align:center;gap:26px;overflow:hidden}
+#ask .ar{font-size:clamp(1.8rem,7vw,2.8rem)}
+#ask h2{font-size:clamp(3.4rem,14vw,8rem);max-width:12ch}
+#ask .peek{position:relative;width:min(40vw,190px);aspect-ratio:3/4;rotate:-4deg}
+#ask .peek .fr{inset:0}
+#ask .peek .tape{top:-10px;left:18%;rotate:-8deg}
+.zone{position:relative;width:min(100%,560px);height:clamp(220px,34dvh,300px)}
+.zone .btn{position:absolute;font-size:1.3rem;padding:.75em 1.6em}
+#yes{left:50%;top:50%;translate:-115% -50%;background:var(--yellow)}
+#no{left:50%;top:50%;translate:15% -50%;background:var(--paper)}
+
+/* ---------- yay ---------- */
+#yay{position:fixed;inset:0;z-index:70;background:var(--orange);display:none;overflow:hidden;clip-path:circle(0 at 50% 50%)}
+#yay.on{display:block}
+#yay canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:1}
+#yay .inner{position:relative;z-index:3;height:100%;display:grid;place-items:center;align-content:center;gap:14px;text-align:center;padding:var(--gutter)}
+#yay .party{font-size:clamp(84px,24vw,150px);color:var(--yellow);filter:drop-shadow(4px 5px 0 var(--ink))}
+#yay h2{font-size:clamp(5rem,26vw,11rem)}
+#yay p{font-weight:900;font-style:italic;font-size:clamp(1.1rem,4.6vw,1.6rem);max-width:22ch;line-height:1.25;background:var(--hot);color:var(--white);border:3px solid var(--ink);box-shadow:4px 5px 0 var(--ink);padding:.7em 1em;rotate:-1.5deg}
+#yay .sign{font-size:clamp(2.2rem,9vw,3.4rem);display:flex;align-items:center;gap:10px}
+#yay .sign .ic{color:var(--yellow);font-size:.8em;filter:drop-shadow(2px 3px 0 var(--ink))}
+#yay .btn{margin-top:14px}
+.pol{position:absolute;z-index:2;width:clamp(70px,15vw,150px);aspect-ratio:3/4;border:3px solid var(--ink);box-shadow:var(--shadow);background:#777;overflow:hidden}
+.pol img{width:100%;height:100%;object-fit:cover}
+
+@media (prefers-reduced-motion:reduce){
+  body::after,.jit,.boil{animation:none}
+  .doodle path{stroke-dashoffset:0}
+  #wishes{height:auto;overflow-x:auto;scroll-snap-type:x mandatory}
+  .wtrack{position:relative;height:auto;padding-block:80px}
+  .wtrack>*{scroll-snap-align:center}
+  .wtrack::before,.wtrack::after{transform:none}
+  #tunnel{display:none}
+}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="i-arrow-down" viewBox="0 0 256 256" fill="currentColor"><path d="M208.49,152.49l-72,72a12,12,0,0,1-17,0l-72-72a12,12,0,0,1,17-17L116,187V40a12,12,0,0,1,24,0V187l51.51-51.52a12,12,0,0,1,17,17Z"/></symbol><symbol id="i-calendar-heart" viewBox="0 0 256 256" fill="currentColor"><path d="M208,28H188V24a12,12,0,0,0-24,0v4H92V24a12,12,0,0,0-24,0v4H48A20,20,0,0,0,28,48V208a20,20,0,0,0,20,20H208a20,20,0,0,0,20-20V48A20,20,0,0,0,208,28Zm-4,176H52V52H68a12,12,0,0,0,24,0h72a12,12,0,0,0,24,0h16ZM152,84a35.86,35.86,0,0,0-24,9.19A36,36,0,0,0,68,120c0,17,9.53,33.56,28.32,49.22a151.47,151.47,0,0,0,26.31,17.51,12,12,0,0,0,10.74,0,151.47,151.47,0,0,0,26.31-17.51C178.47,153.56,188,137,188,120A36,36,0,0,0,152,84Zm-24,78.29c-13.15-7.86-36-25.06-36-42.29a12,12,0,0,1,24,0,12,12,0,0,0,24,0,12,12,0,0,1,24,0C164,137.23,141.14,154.44,128,162.29Z"/></symbol><symbol id="i-check-circle" viewBox="0 0 256 256" fill="currentColor"><path d="M176.49,95.51a12,12,0,0,1,0,17l-56,56a12,12,0,0,1-17,0l-24-24a12,12,0,1,1,17-17L112,143l47.51-47.52A12,12,0,0,1,176.49,95.51ZM236,128A108,108,0,1,1,128,20,108.12,108.12,0,0,1,236,128Zm-24,0a84,84,0,1,0-84,84A84.09,84.09,0,0,0,212,128Z"/></symbol><symbol id="i-coins" viewBox="0 0 256 256" fill="currentColor"><path d="M188,86.11V84c0-14.62-10.83-27.55-30.51-36.4C140.87,40.12,119,36,96,36S51.13,40.12,34.51,47.6C14.83,56.45,4,69.38,4,84v40c0,14.62,10.83,27.55,30.51,36.4A131.67,131.67,0,0,0,68,169.88V172c0,14.62,10.83,27.55,30.51,36.4C115.13,215.88,137,220,160,220s44.87-4.12,61.49-11.6C241.17,199.55,252,186.62,252,172V132C252,109.86,226.71,92.08,188,86.11ZM228,132c0,7.75-21.77,22.48-61.81,23.88C180.33,147.4,188,136.3,188,124V110.44C213.88,115.15,228,125.48,228,132ZM107.37,147.63c-3.63.24-7.42.37-11.37.37-5.08,0-9.89-.22-14.43-.61a10.94,10.94,0,0,0-1.14-.09c-1.51-.14-3-.3-4.43-.48V130.93A187,187,0,0,0,96,132a187,187,0,0,0,20-1.07v15.89c-2.49.3-5.07.56-7.75.75C108,147.58,107.66,147.6,107.37,147.63ZM164,117.14V124c0,4.78-8.28,12.21-24,17.54v-15a115.32,115.32,0,0,0,17.49-6.13Q160.93,118.86,164,117.14ZM96,60c44,0,68,15.85,68,24s-24,24-68,24S28,92.15,28,84,52,60,96,60ZM28,124v-6.86q3.08,1.71,6.51,3.26A115.32,115.32,0,0,0,52,126.53v15C36.28,136.21,28,128.78,28,124Zm64,48v0c1.33,0,2.66,0,4,0q5.44,0,10.77-.32,4.45,1.57,9.23,2.86v15C100.28,184.21,92,176.78,92,172Zm48,22.82V178.94A186.45,186.45,0,0,0,160,180a187,187,0,0,0,20-1.07v15.89a170.08,170.08,0,0,1-40,0Zm64-5.28v-15a115.32,115.32,0,0,0,17.49-6.13q3.44-1.54,6.51-3.26V172C228,176.78,219.72,184.21,204,189.54Z"/></symbol><symbol id="i-confetti" viewBox="0 0 256 256" fill="currentColor"><path d="M114.32,49.8A19.79,19.79,0,0,0,81.72,57L29.22,201.41A19.82,19.82,0,0,0,47.75,228a20,20,0,0,0,6.84-1.22L199,174.28a19.79,19.79,0,0,0,7.24-32.6ZM104.19,183.21l-31.4-31.4L82.94,123.9l49.16,49.16Zm-52.42,26.4Zm12-32.91L79.3,192.26l-24.45,8.89ZM157,164,92,99l10-27.58L184.57,154ZM128,40V16a12,12,0,0,1,24,0V40a12,12,0,0,1-24,0Zm116.48,83.51a12,12,0,0,1-17,17l-16-16a12,12,0,0,1,17-17Zm-.69-40.13-24,8a12,12,0,0,1-7.59-22.77l24-8a12,12,0,1,1,7.59,22.77ZM156.6,65.93C159.83,47.47,173.39,36,192,36c6.45,0,8.69-2.49,10-4.92a18,18,0,0,0,2-7.22V24a12,12,0,0,1,24,0c0,14.47-9.59,36-36,36-4.94,0-10.21,1.19-11.76,10.06A12,12,0,0,1,168.43,80a12.35,12.35,0,0,1-2.08-.18A12,12,0,0,1,156.6,65.93Z"/></symbol><symbol id="i-crown" viewBox="0 0 256 256" fill="currentColor"><path d="M252,80a32,32,0,1,0-60,15.45l-20.86,25.66L150.82,74.4a32,32,0,1,0-45.64,0L84.87,121.11,64,95.45a32,32,0,1,0-35,15.78l14,84.06A19.94,19.94,0,0,0,62.78,212H193.22A19.94,19.94,0,0,0,213,195.29l14-84.06A32.05,32.05,0,0,0,252,80Zm-32-8a8,8,0,1,1-8,8A8,8,0,0,1,220,72ZM128,44a8,8,0,1,1-8,8A8,8,0,0,1,128,44ZM36,72a8,8,0,1,1-8,8A8,8,0,0,1,36,72ZM189.83,188H66.17L55.29,122.78l23.4,28.79A12,12,0,0,0,88,156a12.87,12.87,0,0,0,1.63-.11,12,12,0,0,0,9.37-7.1L127.18,84l.82,0,.82,0L157,148.79a12,12,0,0,0,9.37,7.1A12.87,12.87,0,0,0,168,156a12,12,0,0,0,9.31-4.43l23.4-28.79Z"/></symbol><symbol id="i-diamond" viewBox="0 0 256 256" fill="currentColor"><path d="M238.16,113.89,142.1,17.83a20,20,0,0,0-28.21,0l-96,96.06a20,20,0,0,0,0,28.22l96.05,96.06h0a20,20,0,0,0,28.21,0l96-96.06a20,20,0,0,0,0-28.22ZM128,218.33,37.68,128,128,37.67,218.32,128Z"/></symbol><symbol id="i-door-open" viewBox="0 0 256 256" fill="currentColor"><path d="M232,212H212V40a20,20,0,0,0-20-20H64A20,20,0,0,0,44,40V212H24a12,12,0,0,0,0,24H232a12,12,0,0,0,0-24Zm-44,0H172V44h16ZM68,44h80V212H68Zm68,84a16,16,0,1,1-16-16A16,16,0,0,1,136,128Z"/></symbol><symbol id="i-hand-heart" viewBox="0 0 256 256" fill="currentColor"><path d="M232.76,137.88a28.66,28.66,0,0,0-12-5.39C236.19,114.94,244,97.37,244,80c0-28.67-23.09-52-51.46-52A51.77,51.77,0,0,0,156,42.85,51.77,51.77,0,0,0,119.46,28C91.09,28,68,51.33,68,80c0,10.15,2.72,20.3,8.22,30.7a35.9,35.9,0,0,0-11.73,7.84L43,140H20A20,20,0,0,0,0,160v40a20,20,0,0,0,20,20H120a11.89,11.89,0,0,0,2.91-.36l64-16a11.4,11.4,0,0,0,1.79-.6l38.82-16.54c.23-.09.45-.19.67-.3a28.61,28.61,0,0,0,4.57-48.32ZM119.46,52A27.18,27.18,0,0,1,144.9,68.56a12,12,0,0,0,22.2,0A27.18,27.18,0,0,1,192.54,52C207.42,52,220,64.82,220,80c0,18.06-15,38.84-43.38,60.19L172,141.26c0-.42,0-.84,0-1.26a32,32,0,0,0-32-32H102.71C95.42,97.76,92,88.77,92,80,92,64.82,104.58,52,119.46,52ZM24,164H36v32H24Zm193.68.61-37.51,16L118.52,196H60V157l21.46-21.46A11.93,11.93,0,0,1,89.94,132H140a8,8,0,0,1,0,16H112a12,12,0,0,0,0,24h32a12.19,12.19,0,0,0,2.69-.3l67-15.41.47-.12a4.61,4.61,0,0,1,5.82,4.44A4.58,4.58,0,0,1,217.68,164.61Z"/></symbol><symbol id="i-handshake" viewBox="0 0 256 256" fill="currentColor"><path d="M253.88,108.11l-25.53-51a20,20,0,0,0-26.83-9L178.34,59.7,131.7,44.58a12.14,12.14,0,0,0-7.4,0L77.66,59.7,54.48,48.11a20,20,0,0,0-26.83,9L2.12,108.11a20,20,0,0,0,9,26.83l26.67,13.34,51.18,37.41A12.15,12.15,0,0,0,93,187.62l62,16a12.27,12.27,0,0,0,3,.38,12,12,0,0,0,8.48-3.52l52.62-52.62,25.83-12.92a20,20,0,0,0,8.95-26.83Zm-58.12,29.15-27.52-26a12,12,0,0,0-16.76.26c-9.66,9.74-25.06,16.81-40.81,9.55l38.19-37h22.72l25.81,51.63ZM47.32,71.37,60.59,78l-22,43.9-13.27-6.63Zm107,107.3L101.23,165l-42-30.66L85.17,82.5,128,68.61l1.69.55L90,107.68l-.13.12a20,20,0,0,0,3.4,31c20.95,13.39,46,12.07,66.33-2.73l19.2,18.15Zm63-56.77-22-43.9,13.27-6.63,21.95,43.9ZM118.55,219a12,12,0,0,1-14.62,8.62l-26.6-6.87a12,12,0,0,1-4.08-1.93L48.92,201a12,12,0,0,1,14.16-19.37l22.47,16.42,24.38,6.29A12,12,0,0,1,118.55,219Z"/></symbol><symbol id="i-heart" viewBox="0 0 256 256" fill="currentColor"><path d="M178,36c-20.09,0-37.92,7.93-50,21.56C115.92,43.93,98.09,36,78,36a66.08,66.08,0,0,0-66,66c0,72.34,105.81,130.14,110.31,132.57a12,12,0,0,0,11.38,0C138.19,232.14,244,174.34,244,102A66.08,66.08,0,0,0,178,36Zm-5.49,142.36A328.69,328.69,0,0,1,128,210.16a328.69,328.69,0,0,1-44.51-31.8C61.82,159.77,36,131.42,36,102A42,42,0,0,1,78,60c17.8,0,32.7,9.4,38.89,24.54a12,12,0,0,0,22.22,0C145.3,69.4,160.2,60,178,60a42,42,0,0,1,42,42C220,131.42,194.18,159.77,172.51,178.36Z"/></symbol><symbol id="i-infinity" viewBox="0 0 256 256" fill="currentColor"><path d="M252,128a60,60,0,0,1-102.43,42.43l-.49-.53L89.22,102.31a36,36,0,1,0,0,51.38l3.08-3.48a12,12,0,1,1,18,15.91l-3.35,3.78-.49.53a60,60,0,1,1,0-84.86l.49.53,59.86,67.59a36,36,0,1,0,0-51.38l-3.08,3.48a12,12,0,1,1-18-15.91l3.35-3.78.49-.53A60,60,0,0,1,252,128Z"/></symbol><symbol id="i-lightning" viewBox="0 0 256 256" fill="currentColor"><path d="M219.71,117.38a12,12,0,0,0-7.25-8.52L161.28,88.39l10.59-70.61a12,12,0,0,0-20.64-10l-112,120a12,12,0,0,0,4.31,19.33l51.18,20.47L84.13,238.22a12,12,0,0,0,20.64,10l112-120A12,12,0,0,0,219.71,117.38ZM113.6,203.55l6.27-41.77a12,12,0,0,0-7.41-12.92L68.74,131.37,142.4,52.45l-6.27,41.77a12,12,0,0,0,7.41,12.92l43.72,17.49Z"/></symbol><symbol id="i-shooting-star" viewBox="0 0 256 256" fill="currentColor"><path d="M243.16,68.85a17.4,17.4,0,0,0-15.26-12l-34.52-2.72L180.12,22.66a17.52,17.52,0,0,0-32.24,0L134.62,54.09l-34.51,2.72a17.39,17.39,0,0,0-9.93,30.62l26.17,22.1-8,33a17.46,17.46,0,0,0,26,19L164,143.66l29.59,17.81a17.46,17.46,0,0,0,26-19l-8-33,26.17-22.1A17.3,17.3,0,0,0,243.16,68.85ZM190.5,96a12,12,0,0,0-3.92,12l6,24.91-22.41-13.5a12.06,12.06,0,0,0-12.38,0l-22.41,13.5,6-24.91a12,12,0,0,0-3.93-12L118,79.48l25.83-2a12,12,0,0,0,10.11-7.3L164,46.2l10.11,23.94a12,12,0,0,0,10.11,7.3l25.82,2Zm-158,88.52a12,12,0,0,1-17-17l51.76-51.75a12,12,0,0,1,17,17Zm63.59-8.57a12,12,0,0,1,0,17l-47.59,47.6a12,12,0,0,1-17-17l47.6-47.59A12,12,0,0,1,96.08,175.92Zm62.44,9.56a12,12,0,0,1,0,17l-38,38a12,12,0,0,1-17-17l38-38A12,12,0,0,1,158.52,185.48Z"/></symbol><symbol id="i-smiley-melting" viewBox="0 0 256 256" fill="currentColor"><path d="M180,136a16,16,0,1,1-16-16A16,16,0,0,1,180,136ZM136,92a16,16,0,1,0-16,16A16,16,0,0,0,136,92Zm67.83-40.9A108,108,0,0,0,47.5,200a12,12,0,0,0,17.89-16,84,84,0,1,1,125.22,0,12,12,0,0,0,17.89,16,108,108,0,0,0-4.67-148.9ZM140,164h-4c-19.81,0-44-16.61-44-36a36.47,36.47,0,0,1,.5-6,12,12,0,0,0-23.67-4A60.67,60.67,0,0,0,68,128c0,16.1,8,31.46,22.49,43.25C103.58,181.9,120.17,188,136,188h4a8,8,0,0,1,0,16H100a32,32,0,0,0-32,32,12,12,0,0,0,24,0,8,8,0,0,1,8-8h40a32,32,0,0,0,0-64Z"/></symbol><symbol id="i-sparkle" viewBox="0 0 256 256" fill="currentColor"><path d="M199,125.31l-49.88-18.39L130.69,57a19.92,19.92,0,0,0-37.38,0L74.92,106.92,25,125.31a19.92,19.92,0,0,0,0,37.38l49.88,18.39L93.31,231a19.92,19.92,0,0,0,37.38,0l18.39-49.88L199,162.69a19.92,19.92,0,0,0,0-37.38Zm-63.38,35.16a12,12,0,0,0-7.11,7.11L112,212.28l-16.47-44.7a12,12,0,0,0-7.11-7.11L43.72,144l44.7-16.47a12,12,0,0,0,7.11-7.11L112,75.72l16.47,44.7a12,12,0,0,0,7.11,7.11L180.28,144ZM140,40a12,12,0,0,1,12-12h12V16a12,12,0,0,1,24,0V28h12a12,12,0,0,1,0,24H188V64a12,12,0,0,1-24,0V52H152A12,12,0,0,1,140,40ZM252,88a12,12,0,0,1-12,12h-4v4a12,12,0,0,1-24,0v-4h-4a12,12,0,0,1,0-24h4V72a12,12,0,0,1,24,0v4h4A12,12,0,0,1,252,88Z"/></symbol><symbol id="i-star" viewBox="0 0 256 256" fill="currentColor"><path d="M243,96a20.33,20.33,0,0,0-17.74-14l-56.59-4.57L146.83,24.62a20.36,20.36,0,0,0-37.66,0L87.35,77.44,30.76,82A20.45,20.45,0,0,0,19.1,117.88l43.18,37.24-13.2,55.7A20.37,20.37,0,0,0,79.57,233L128,203.19,176.43,233a20.39,20.39,0,0,0,30.49-22.15l-13.2-55.7,43.18-37.24A20.43,20.43,0,0,0,243,96ZM172.53,141.7a12,12,0,0,0-3.84,11.86L181.58,208l-47.29-29.08a12,12,0,0,0-12.58,0L74.42,208l12.89-54.4a12,12,0,0,0-3.84-11.86L41.2,105.24l55.4-4.47a12,12,0,0,0,10.13-7.38L128,41.89l21.27,51.5a12,12,0,0,0,10.13,7.38l55.4,4.47Z"/></symbol><symbol id="i-telegram-logo" viewBox="0 0 256 256" fill="currentColor"><path d="M231.49,23.16a13,13,0,0,0-13.23-2.26L15.6,100.21a18.22,18.22,0,0,0,3.12,34.86L68,144.74V200a20,20,0,0,0,34.4,13.88l22.67-23.51L162.35,223a20,20,0,0,0,32.7-10.54L235.67,35.91A13,13,0,0,0,231.49,23.16ZM139.41,77.52,77.22,122.09l-34.43-6.75ZM92,190.06V161.35l15,13.15Zm81.16,10.52L99.28,135.81,205.59,59.63Z"/></symbol><symbol id="i-users-three" viewBox="0 0 256 256" fill="currentColor"><path d="M164.38,181.1a52,52,0,1,0-72.76,0,75.89,75.89,0,0,0-30,28.89,12,12,0,0,0,20.78,12,53,53,0,0,1,91.22,0,12,12,0,1,0,20.78-12A75.89,75.89,0,0,0,164.38,181.1ZM100,144a28,28,0,1,1,28,28A28,28,0,0,1,100,144Zm147.21,9.59a12,12,0,0,1-16.81-2.39c-8.33-11.09-19.85-19.59-29.33-21.64a12,12,0,0,1-1.82-22.91,20,20,0,1,0-24.78-28.3,12,12,0,1,1-21-11.6,44,44,0,1,1,73.28,48.35,92.18,92.18,0,0,1,22.85,21.69A12,12,0,0,1,247.21,153.59Zm-192.28-24c-9.48,2.05-21,10.55-29.33,21.65A12,12,0,0,1,6.41,136.79,92.37,92.37,0,0,1,29.26,115.1a44,44,0,1,1,73.28-48.35,12,12,0,1,1-21,11.6,20,20,0,1,0-24.78,28.3,12,12,0,0,1-1.82,22.91Z"/></symbol><symbol id="i-x" viewBox="0 0 256 256" fill="currentColor"><path d="M208.49,191.51a12,12,0,0,1-17,17L128,145,64.49,208.49a12,12,0,0,1-17-17L111,128,47.51,64.49a12,12,0,0,1,17-17L128,111l63.51-63.52a12,12,0,0,1,17,17L145,128Z"/></symbol></svg>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <filter id="b1"><feTurbulence type="fractalNoise" baseFrequency=".035" numOctaves="2" seed="2" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="4"/></filter>
+  <filter id="b2"><feTurbulence type="fractalNoise" baseFrequency=".035" numOctaves="2" seed="7" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="4"/></filter>
+  <filter id="b3"><feTurbulence type="fractalNoise" baseFrequency=".035" numOctaves="2" seed="13" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="4"/></filter>
+</svg>
+
+<div id="intro" aria-hidden="true">
+  <div class="flip">
+    <div class="ol y boil"></div><div class="ol boil"></div>
+    <div class="fr"><img id="introImg" src="img/k2.webp" alt=""></div>
+  </div>
+  <div class="wm who boil">carson</div>
+  <div class="lbl count" id="count">is knocking on the jusenho door</div>
+</div>
+
+<main>
+  <!-- HERO -->
+  <section id="hero">
+    <div class="hero-copy">
+      <div class="lbl h-in">an application for dorm jusenho</div>
+      <h1 class="wm boil h-in">hi, jusenho!</h1>
+      <p class="h-in">I'm Carson, and I really want to join your dorm. Please read this until the end.</p>
+      <a class="btn h-in" href="#tunnel" data-go="#tunnel">read my application <svg class="ic"><use href="#i-arrow-down"/></svg></a>
+    </div>
+    <div class="collage" aria-hidden="true">
+      <div class="ol y boil p" data-d="-40" style="left:14%;top:4%;width:30%;height:36%"></div>
+      <div class="blk p" data-d="-60" style="left:29%;top:6%;width:27%;height:11%"></div>
+      <div class="fr p" data-d="-110" style="left:56%;top:0;width:42%;height:36%"><img class="jit" src="img/des4.webp" alt=""></div>
+      <div class="ol k boil p" data-d="-30" style="left:3%;top:16%;width:24%;height:30%"></div>
+      <div class="ol boil p" data-d="30" style="left:0;top:36%;width:7%;height:28%"></div>
+      <div class="blk p" data-d="50" style="left:66%;top:38%;width:30%;height:13%"></div>
+      <div class="fr p" data-d="0" style="left:12%;top:20%;width:70%;height:54%"><img class="jit" src="img/trio1.webp" alt=""></div>
+      <div class="ol k boil p" data-d="70" style="left:62%;top:62%;width:26%;height:22%"></div>
+      <div class="fr p" data-d="90" style="left:0;top:57%;width:38%;height:30%"><img class="jit" id="heroFlip" src="img/k5.webp" alt=""></div>
+      <div class="ol boil p" data-d="120" style="left:24%;top:85%;width:32%;height:13%"></div>
+      <div class="blk p" data-d="40" style="left:4%;top:72%;width:57%;height:11%"></div>
+      <div class="blk p" data-d="110" style="left:46%;top:88%;width:50%;height:9%"></div>
+      <div class="ar hero-ar p" data-d="-60">مرحبا</div>
+      <div class="wm hero-wm boil p" data-d="40">jusenho</div>
+      <div class="wm hero-wm2 boil p" data-d="110">let me in</div>
+      <div class="lbl tag p" data-d="-110" style="left:70%;top:52%">secret</div>
+      <div class="lbl tag p" data-d="90" style="left:2%;top:52%">01</div>
+    </div>
+  </section>
+
+  <!-- 3D TUNNEL -->
+  <section id="tunnel" aria-label="Juhoon, Seonghyeon, Keonho">
+    <canvas id="gl"></canvas>
+    <div class="lines">
+      <div class="wm line">Juhoon.</div>
+      <div class="wm line">Seonghyeon.</div>
+      <div class="wm line">Keonho.</div>
+      <div class="wm line">and me<span class="lbl">hoping to be the next one in the dorm</span></div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="me">
+    <div class="scatter" aria-hidden="true">
+      <div class="fr sc" data-s="-160" style="left:-4%;top:6%;rotate:-7deg"><img class="jit" src="img/k6.webp" alt=""></div>
+      <div class="fr sc" data-s="-260" style="right:-3%;top:2%;rotate:6deg"><img class="jit" src="img/k7.webp" alt=""></div>
+      <div class="fr sc" data-s="-120" style="right:2%;bottom:0;rotate:-5deg"><img class="jit" src="img/k3.webp" alt=""></div>
+    </div>
+    <div class="sec-h rv">
+      <h2 class="wm boil">about me</h2><span class="ar">عنّي</span>
+    </div>
+    <div class="me-grid">
+      <div class="reel rv">
+        <div class="ol y boil"></div><div class="ol boil"></div>
+        <div class="tape"></div>
+        <div class="fr"><video id="reel" src="img/keonho-reel.mp4" poster="img/k2.webp" muted loop playsinline preload="metadata" aria-label="Hand-animated clip of Keonho"></video></div>
+        <div class="blk"><span class="lbl">my muse</span></div>
+      </div>
+      <div class="idcard">
+        <div class="row rv">
+          <div class="lbl"><svg class="ic"><use href="#i-star"/></svg>name</div>
+          <div class="val wm boil">Carson</div>
+        </div>
+        <div class="row rv">
+          <div class="lbl"><svg class="ic"><use href="#i-sparkle"/></svg>muse</div>
+          <div class="val"><span class="wm boil">Keonho</span>
+            <svg class="doodle boil" viewBox="0 0 220 110" preserveAspectRatio="none"><path pathLength="1" stroke="#f7c948" stroke-width="4" d="M40 22 C 90 4, 190 6, 208 44 C 222 78, 150 104, 90 100 C 30 96, 4 70, 14 44 C 22 22, 70 10, 120 12 C 150 13, 170 18, 182 26"/></svg>
+          </div>
+        </div>
+        <div class="row rv">
+          <div class="lbl"><svg class="ic"><use href="#i-heart"/></svg>favorite things</div>
+          <div class="val"><span class="wm boil">Oniyaw</span> <svg class="ic"><use href="#i-heart"/></svg>
+            <svg class="doodle under boil" viewBox="0 0 220 30" preserveAspectRatio="none"><path pathLength="1" stroke="#fbfaf7" stroke-width="4" d="M4 18 C 40 6, 80 26, 120 14 C 150 6, 180 22, 216 10"/></svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WISHES -->
+  <section id="wishes" aria-labelledby="wishes-h">
+    <div class="wtrack" id="wtrack">
+      <div class="wtitle">
+        <h2 class="wm boil" id="wishes-h">my wishes</h2>
+        <span class="ar">أمنياتي</span>
+        <span class="lbl">ten of them, in order</span>
+      </div>
+      <article class="wish"><span class="n">01</span><span class="badge"><svg class="ic"><use href="#i-coins"/></svg></span><span class="stk" aria-hidden="true"><span class="tape"></span><img src="img/k1-sk.webp" data-flip="img/k1.webp" alt="" loading="lazy"></span><div><span class="lbl">wish no. 1</span><p>KAYA</p></div></article>
+      <figure class="wphoto" aria-hidden="true"><div class="ol y boil"></div><div class="fr"><img class="jit" src="img/k8.webp" data-flip="img/k8-sk.webp" alt=""></div><figcaption class="lbl">keonho</figcaption></figure>
+      <article class="wish"><span class="n">02</span><span class="badge"><svg class="ic"><use href="#i-telegram-logo"/></svg></span><span class="stk" aria-hidden="true"><span class="tape"></span><img src="img/k2-sk.webp" data-flip="img/k2.webp" alt="" loading="lazy"></span><div><span class="lbl">wish no. 2</span><p>TELEPREM LIFETIME</p></div></article>
+      <article class="wish"><span class="n">03</span><span class="badge"><svg class="ic"><use href="#i-check-circle"/></svg></span><span class="stk" aria-hidden="true"><span class="tape"></span><img src="img/k3-sk.webp" data-flip="img/k3.webp" alt="" loading="lazy"></span><div><span class="lbl">wish no. 3</span><p>DI ACCEPT JUSENHO</p></div></article>
+      <figure class="wphoto tall" aria-hidden="true"><div class="ol boil"></div><div class="fr"><img class="jit" src="img/j2.webp" alt=""></div><figcaption class="lbl">juhoon</figcaption></figure>
+      <article class="wish"><span class="n">04</span><span class="badge"><svg class="ic"><use href="#i-crown"/></svg></span><span class="stk" aria-hidden="true"><span class="tape"></span><img src="img/k4-sk.webp" data-flip="img/k4.webp" alt="" loading="lazy"></span><div><span class="lbl">wish no. 4</span><p>JADI OWNER TELE</p></div></article>
+      <article class="wish"><span class="n">05</span><span class="badge"><svg class="ic"><use href="#i-door-open"/></svg></span><span class="stk" aria-hidden="true"><span class="tape"></span><img src="img/k5-sk.webp" data-flip="img/k5.webp" alt="" loading="lazy"></span><div><span class="lbl">wish no. 5</span><p>MASUK JUSENHO</p></div></article>
+      <figure class="wphoto" aria-hidden="true"><div class="ol y boil"></div><div class="fr"><img class="jit" src="img/k9.webp" data-flip="img/k9-sk.webp" alt=""></div><figcaption class="lbl">keonho</figcaption></figure>
+      <article class="wish"><span class="n">06</span><span class="badge"><svg class="ic"><use href="#i-handshake"/></svg></span><span class="stk" aria-hidden="true"><span class="tape"></span><img src="img/k6-sk.webp" data-flip="img/k6.webp" alt="" loading="lazy"></span><div><span class="lbl">wish no. 6</span><p>DI TERIMA JUSENHO</p></div></article>
+      <article class="wish"><span class="n">07</span><span class="badge"><svg class="ic"><use href="#i-hand-heart"/></svg></span><span class="stk" aria-hidden="true"><span class="tape"></span><img src="img/k7-sk.webp" data-flip="img/k7.webp" alt="" loading="lazy"></span><div><span class="lbl">wish no. 7</span><p>PELUK MEMBER JUSENHO</p></div></article>
+      <figure class="wphoto tall" aria-hidden="true"><div class="ol boil"></div><div class="fr"><img class="jit" src="img/s1.webp" alt=""></div><figcaption class="lbl">seonghyeon</figcaption></figure>
+      <article class="wish"><span class="n">08</span><span class="badge"><svg class="ic"><use href="#i-heart"/></svg></span><span class="stk" aria-hidden="true"><span class="tape"></span><img src="img/k8-sk.webp" data-flip="img/k8.webp" alt="" loading="lazy"></span><div><span class="lbl">wish no. 8</span><p>DISAYANG JUSENHO</p></div></article>
+      <article class="wish"><span class="n">09</span><span class="badge"><svg class="ic"><use href="#i-users-three"/></svg></span><span class="stk" aria-hidden="true"><span class="tape"></span><img src="img/k9-sk.webp" data-flip="img/k9.webp" alt="" loading="lazy"></span><div><span class="lbl">wish no. 9</span><p>BESTIEAN SAMA JUSENHO</p></div></article>
+      <figure class="wphoto" aria-hidden="true"><div class="ol y boil"></div><div class="fr"><img class="jit" src="img/trio2.webp" alt=""></div><figcaption class="lbl">jusenho</figcaption></figure>
+      <article class="wish"><span class="n">10</span><span class="badge"><svg class="ic"><use href="#i-sparkle"/></svg></span><span class="stk" aria-hidden="true"><span class="tape"></span><img src="img/k2-sk.webp" data-flip="img/k2.webp" alt="" loading="lazy"></span><div><span class="lbl">wish no. 10</span><p>MERANGKUL JUSENHO</p></div></article>
+      <div class="wend"><div class="wm boil">that's all.</div><span class="lbl">ten wishes, one dorm.</span></div>
+    </div>
+  </section>
+
+  <!-- WHAT I WILL DO -->
+  <section id="promise" aria-labelledby="promise-h">
+    <div class="sec-h rv"><h2 class="wm boil" id="promise-h">what i will do</h2><span class="ar">وعدي</span></div>
+    <span class="lbl sub rv">if I get accepted into dorm Jusenho</span>
+    <div class="stack"><article class="pcard c1" style="--i:0"><div class="ph"><img src="img/trio1.webp" alt="" loading="lazy"></div><div class="body"><div class="top"><span class="n">01</span><svg class="ic"><use href="#i-hand-heart"/></svg></div><p>PELUK SEMUA MEMBER JUSENHO</p></div></article><article class="pcard c2" style="--i:1"><div class="ph"><img src="img/k2.webp" data-flip="img/k2-sk.webp" alt="" loading="lazy"></div><div class="body"><div class="top"><span class="n">02</span><svg class="ic"><use href="#i-lightning"/></svg></div><p>RAJIN SFS</p></div></article><article class="pcard c3" style="--i:2"><div class="ph"><img src="img/k6.webp" data-flip="img/k6-sk.webp" alt="" loading="lazy"></div><div class="body"><div class="top"><span class="n">03</span><svg class="ic"><use href="#i-calendar-heart"/></svg></div><p>SFS 24 JAM</p></div></article><article class="pcard c4" style="--i:3"><div class="ph"><img src="img/g2.webp" alt="" loading="lazy"></div><div class="body"><div class="top"><span class="n">04</span><svg class="ic"><use href="#i-diamond"/></svg></div><p>MENIKAH DENGAN JUSENHO</p></div></article><article class="pcard c5" style="--i:4"><div class="ph"><img src="img/k7.webp" data-flip="img/k7-sk.webp" alt="" loading="lazy"></div><div class="body"><div class="top"><span class="n">05</span><svg class="ic"><use href="#i-infinity"/></svg></div><p>SFS LAGI SAMPE MAMPUS</p></div></article></div>
+  </section>
+
+  <!-- ASK -->
+  <section id="ask" aria-labelledby="ask-h">
+    <span class="ar rv">هل تقبلونني؟</span>
+    <div class="peek rv" aria-hidden="true"><div class="tape"></div><div class="fr"><img class="jit" id="askFlip" src="img/k4.webp" alt=""></div></div>
+    <h2 class="wm boil rv" id="ask-h">would you guys accept me?</h2>
+    <div class="zone" id="zone">
+      <button class="btn" id="yes" type="button">yes <svg class="ic"><use href="#i-heart"/></svg></button>
+      <button class="btn" id="no" type="button">no <svg class="ic"><use href="#i-x"/></svg></button>
+    </div>
+  </section>
+</main>
+
+<div id="yay" role="dialog" aria-modal="true" aria-labelledby="yay-h">
+  <canvas id="confetti"></canvas>
+  <div id="pols" aria-hidden="true"></div>
+  <div class="inner">
+    <svg class="ic party jit"><use href="#i-confetti"/></svg>
+    <h2 class="wm boil" id="yay-h">yay!</h2>
+    <p>Thank you for accepting me, Jusenho. See you in the dorm.</p>
+    <div class="wm sign boil">love, carson <svg class="ic"><use href="#i-heart"/></svg></div>
+    <button class="btn" id="again" type="button">read it again</button>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
+<script type="module">
+import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js";
+
+gsap.registerPlugin(ScrollTrigger);
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const rnd = (a, b) => a + Math.random() * (b - a);
+const K = [1,2,3,4,5,6,7,8,9];
+const kSeq = K.flatMap(i => [`img/k${i}.webp`, `img/k${i}-sk.webp`]);
+
+// preload every flipbook frame so swaps never flash
+kSeq.forEach(s => { const i = new Image(); i.src = s; });
+
+/* stop-motion flipbook: swap frames at a low, hand-drawn frame rate */
+function flipbook(img, frames, ms = 160) {
+  if (reduce) return;
+  let n = 0;
+  setInterval(() => {
+    n = (n + 1) % frames.length;
+    img.src = frames[n];
+    img.style.rotate = rnd(-1.4, 1.4) + "deg";
+  }, ms);
+}
+
+/* ---------- smooth scroll ---------- */
+let lenis = null;
+if (!reduce) {
+  lenis = new Lenis({ lerp: 0.1 });
+  lenis.on("scroll", ScrollTrigger.update);
+  gsap.ticker.add(t => lenis.raf(t * 1000));
+  gsap.ticker.lagSmoothing(0);
+  lenis.stop();
+}
+$$("[data-go]").forEach(a => a.addEventListener("click", e => {
+  e.preventDefault();
+  lenis ? lenis.scrollTo(a.dataset.go) : $(a.dataset.go).scrollIntoView();
+}));
+
+/* ---------- intro ---------- */
+const introImg = $("#introImg");
+flipbook(introImg, kSeq, 140);
+const minWait = new Promise(r => setTimeout(r, reduce ? 200 : 2300));
+const loaded = new Promise(r => (document.readyState === "complete" ? r() : addEventListener("load", r)));
+const maxWait = new Promise(r => setTimeout(r, 6000));
+Promise.all([minWait, Promise.race([loaded, maxWait])]).then(() => {
+  const tl = gsap.timeline({ onComplete: () => { $("#intro").remove(); lenis && lenis.start(); ScrollTrigger.refresh(); } });
+  tl.to("#intro .flip", { scale: 1.08, rotate: -3, duration: 0.25, ease: "steps(3)" })
+    .to("#intro", { clipPath: "inset(0 0 100% 0)", duration: 0.9, ease: "expo.inOut" })
+    .add(heroIn(), "-=0.45");
+});
+
+function heroIn() {
+  const tl = gsap.timeline();
+  if (reduce) return tl;
+  // collage pieces drop in like paper being pinned on a board: stepped ease = stop-motion
+  tl.from(".collage .p", { opacity: 0, y: 40, rotate: () => rnd(-12, 12), scale: 0.85, duration: 0.5, ease: "steps(4)", stagger: 0.06 })
+    .from(".h-in", { opacity: 0, y: 26, duration: 0.8, ease: "expo.out", stagger: 0.08 }, 0.2);
+  return tl;
+}
+flipbook($("#heroFlip"), ["img/k5.webp", "img/k5-sk.webp", "img/k8.webp", "img/k8-sk.webp"], 420);
+
+if (!reduce) {
+  /* hero collage drifts apart on scroll (parallax depth per piece) */
+  $$(".collage .p").forEach(el => {
+    gsap.to(el, { y: +el.dataset.d * 1.4, ease: "none",
+      scrollTrigger: { trigger: "#hero", start: "top top", end: "bottom top", scrub: 1 } });
+  });
+}
+
+/* ---------- 3D tunnel (three.js) ---------- */
+function tunnel() {
+  const canvas = $("#gl");
+  let renderer;
+  try { renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true }); }
+  catch { $("#tunnel").remove(); return; }
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  const scene = new THREE.Scene();
+  scene.fog = new THREE.Fog(0xcf4f00, 3, 17);
+  const camera = new THREE.PerspectiveCamera(60, 1, 0.1, 60);
+  const loader = new THREE.TextureLoader();
+  const photos = ["j1","k2","s4","k3","trio2","j2","k7","s1","k4","g1","j3","k9","s3","k1","des2","k6"];
+  const GAP = 2.6;
+  const items = [];
+  const plane = new THREE.PlaneGeometry(1, 1);
+  const black = new THREE.MeshBasicMaterial({ color: 0x141210 });
+  photos.forEach((p, i) => {
+    const g = new THREE.Group();
+    const side = i % 2 ? 1 : -1;
+    const tex = loader.load(`img/${p}.webp`, t => {
+      const a = t.image.width / t.image.height;
+      photo.scale.set(1.5 * a, 1.5, 1); border.scale.set(1.5 * a + 0.08, 1.58, 1);
+    });
+    tex.colorSpace = THREE.SRGBColorSpace;
+    const photo = new THREE.Mesh(plane, new THREE.MeshBasicMaterial({ map: tex }));
+    const border = new THREE.Mesh(plane, black);
+    border.position.z = -0.01;
+    photo.scale.set(1.2, 1.5, 1); border.scale.set(1.28, 1.58, 1);
+    g.add(border, photo);
+    // the white / yellow outline rectangles from the jusenho edits, floating behind each photo
+    const outline = new THREE.LineSegments(new THREE.EdgesGeometry(plane),
+      new THREE.LineBasicMaterial({ color: i % 3 ? 0xfbfaf7 : 0xf7c948 }));
+    outline.scale.set(rnd(0.9, 1.6), rnd(1.1, 1.8), 1);
+    outline.position.set(-side * rnd(0.3, 0.7), rnd(-0.5, 0.5), -0.25);
+    g.add(outline);
+    const base = { x: side * rnd(1.1, 1.7), y: rnd(-0.7, 0.7), z: -i * GAP, rz: rnd(-0.14, 0.14), ry: -side * rnd(0.15, 0.35) };
+    g.userData.base = base;
+    g.position.set(base.x, base.y, base.z);
+    g.rotation.set(0, base.ry, base.rz);
+    scene.add(g); items.push(g);
+  });
+
+  let spread = 1;
+  function size() {
+    const w = innerWidth, h = innerHeight;
+    renderer.setSize(w, h, false);
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+    spread = Math.min(1, Math.max(0.5, w / h / 1.2)); // narrower on phones
+    items.forEach(g => (g.position.x = g.userData.base.x * spread));
+  }
+  size(); addEventListener("resize", size);
+
+  const startZ = 4, endZ = -(photos.length - 1) * GAP + 1.5;
+  let target = startZ, mx = 0, my = 0, running = false, last = 0;
+  camera.position.z = startZ;
+  addEventListener("pointermove", e => { mx = e.clientX / innerWidth - 0.5; my = e.clientY / innerHeight - 0.5; });
+
+  function frame(t) {
+    if (!running) return;
+    requestAnimationFrame(frame);
+    camera.position.z += (target - camera.position.z) * 0.08;
+    camera.position.x += (mx * 0.5 - camera.position.x) * 0.05;
+    camera.position.y += (-my * 0.35 - camera.position.y) * 0.05;
+    // "boil": re-jitter every piece at ~8fps, like redrawn animation frames
+    if (t - last > 125) {
+      last = t;
+      items.forEach(g => { const b = g.userData.base; g.rotation.z = b.rz + rnd(-0.012, 0.012); g.position.y = b.y + rnd(-0.01, 0.01); });
+    }
+    renderer.render(scene, camera);
+  }
+  renderer.render(scene, camera);
+
+  const lines = $$("#tunnel .line");
+  const tl = gsap.timeline({
+    scrollTrigger: {
+      trigger: "#tunnel", start: "top top", end: "+=320%", pin: true, scrub: 0.6,
+      onUpdate: s => (target = startZ + (endZ - startZ) * s.progress),
+      onToggle: s => { running = s.isActive; if (running) requestAnimationFrame(frame); },
+    },
+  });
+  lines.forEach((l, i) => {
+    tl.fromTo(l, { opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1, duration: 0.5, ease: "steps(5)" }, i * 1.2);
+    if (i < lines.length - 1) tl.to(l, { opacity: 0, scale: 1.25, duration: 0.4 }, i * 1.2 + 0.8);
+  });
+}
+if (!reduce) tunnel();
+
+/* ---------- about ---------- */
+const reel = $("#reel");
+ScrollTrigger.create({ trigger: reel, start: "top bottom", end: "bottom top",
+  onToggle: s => (s.isActive ? reel.play().catch(() => {}) : reel.pause()) });
+
+if (!reduce) {
+  $$(".rv").forEach(el => gsap.from(el, { opacity: 0, y: 40, duration: 0.9, ease: "expo.out",
+    scrollTrigger: { trigger: el, start: "top 85%", toggleActions: "play none none reverse" } }));
+  $$(".sc").forEach(el => gsap.to(el, { y: +el.dataset.s, ease: "none",
+    scrollTrigger: { trigger: "#me", start: "top bottom", end: "bottom top", scrub: 1 } }));
+  $$("#me .doodle path").forEach(p => gsap.to(p, { strokeDashoffset: 0, duration: 1.1, ease: "power2.inOut",
+    scrollTrigger: { trigger: p.closest(".row"), start: "top 70%", toggleActions: "play none none reverse" } }));
+}
+
+/* ---------- wishes: vertical scroll drives a horizontal film strip ---------- */
+if (!reduce) {
+  const track = $("#wtrack");
+  const dist = () => track.scrollWidth - innerWidth;
+  const pan = gsap.to(track, {
+    x: () => -dist(), ease: "none",
+    scrollTrigger: { trigger: "#wishes", start: "top top", end: () => "+=" + dist(), pin: true, scrub: 1, invalidateOnRefresh: true,
+      onUpdate: s => track.style.setProperty("--p", s.progress.toFixed(3)) },
+  });
+  $$(".wish").forEach(card => {
+    gsap.from(card.querySelector(".badge"), { scale: 0, rotate: -40, duration: 0.5, ease: "back.out(3)",
+      scrollTrigger: { containerAnimation: pan, trigger: card, start: "left 88%", toggleActions: "play none none reverse" } });
+    gsap.from(card.querySelector("p"), { y: 30, opacity: 0, duration: 0.6, ease: "expo.out",
+      scrollTrigger: { containerAnimation: pan, trigger: card, start: "left 80%", toggleActions: "play none none reverse" } });
+  });
+}
+$$(".wish .stk img, .wphoto img[data-flip]").forEach(img => flipbook(img, [img.getAttribute("src"), img.dataset.flip], 380));
+
+/* ---------- promises: sticky cards that shrink back as the next one lands ---------- */
+if (!reduce) {
+  const cards = $$(".pcard");
+  cards.forEach((c, i) => {
+    if (i === cards.length - 1) return;
+    gsap.to(c, { scale: 0.9, rotate: i % 2 ? 1.5 : -1.5, ease: "none",
+      scrollTrigger: { trigger: cards[i + 1], start: "top bottom", end: "top 20%", scrub: true } });
+  });
+}
+$$(".pcard img[data-flip]").forEach(img => flipbook(img, [img.getAttribute("src"), img.dataset.flip], 300));
+
+/* ---------- ask: the "no" button never lets you press it ---------- */
+flipbook($("#askFlip"), ["img/k4.webp", "img/k4-sk.webp"], 300);
+const zone = $("#zone"), yes = $("#yes"), no = $("#no");
+let dodges = 0;
+function dodge(e) {
+  if (e) e.preventDefault();
+  const z = zone.getBoundingClientRect(), b = no.getBoundingClientRect(), y = yes.getBoundingClientRect();
+  const yc = { x: y.left + y.width / 2 - z.left, y: y.top + y.height / 2 - z.top };
+  let x, top, tries = 0;
+  do {
+    x = rnd(0, z.width - b.width); top = rnd(0, z.height - b.height); tries++;
+  } while (tries < 40 && Math.hypot(x + b.width / 2 - yc.x, top + b.height / 2 - yc.y) < 150);
+  no.style.translate = "0 0";
+  gsap.to(no, { left: x, top, rotate: rnd(-14, 14), duration: 0.32, ease: "back.out(2.2)" });
+  dodges++;
+  gsap.to(yes, { scale: Math.min(1 + dodges * 0.07, 1.6), duration: 0.3, ease: "back.out(3)" });
+}
+no.addEventListener("pointerenter", e => { if (e.pointerType === "mouse") dodge(); });
+no.addEventListener("pointerdown", dodge);
+no.addEventListener("click", dodge);
+no.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") dodge(e); });
+
+/* ---------- yay ---------- */
+const yay = $("#yay");
+yes.addEventListener("click", () => {
+  const r = yes.getBoundingClientRect();
+  const cx = ((r.left + r.width / 2) / innerWidth) * 100, cy = ((r.top + r.height / 2) / innerHeight) * 100;
+  lenis && lenis.stop();
+  document.documentElement.style.overflow = "hidden";
+  yay.classList.add("on");
+  gsap.fromTo(yay, { clipPath: `circle(0% at ${cx}% ${cy}%)` }, { clipPath: `circle(150% at ${cx}% ${cy}%)`, duration: 1.1, ease: "expo.inOut" });
+  if (!reduce) gsap.from("#yay .inner > *", { opacity: 0, y: 40, scale: 0.8, stagger: 0.1, duration: 0.6, ease: "back.out(2)", delay: 0.5 });
+  polaroids();
+  confetti();
+  $("#again").focus({ preventScroll: true });
+});
+$("#again").addEventListener("click", () => {
+  yay.classList.remove("on");
+  document.documentElement.style.overflow = "";
+  $("#pols").innerHTML = "";
+  stopConfetti();
+  lenis ? (lenis.start(), lenis.scrollTo(0, { immediate: true })) : scrollTo(0, 0);
+});
+
+function polaroids() {
+  const box = $("#pols");
+  const spots = [[-3, 3], [78, 2], [-5, 70], [80, 72], [40, -6], [16, 86], [58, 88], [86, 38], [-6, 38]];
+  const pics = ["k1", "k3", "k6", "k2", "trio1", "k7", "k4", "j2", "s4"];
+  spots.forEach(([x, y], i) => {
+    const d = document.createElement("div");
+    d.className = "pol";
+    d.style.left = x + "%"; d.style.top = y + "%";
+    d.innerHTML = `<img class="jit" src="img/${pics[i]}.webp" alt="">`;
+    box.appendChild(d);
+    if (!reduce) gsap.from(d, { y: -innerHeight, rotate: rnd(-60, 60), duration: 0.9, ease: "steps(8)", delay: 0.35 + i * 0.07 });
+    gsap.set(d, { rotate: rnd(-14, 14) });
+  });
+}
+
+let raf = 0;
+function stopConfetti() { cancelAnimationFrame(raf); raf = 0; }
+function confetti() {
+  if (reduce) return;
+  const c = $("#confetti"), x = c.getContext("2d");
+  const dpr = Math.min(devicePixelRatio, 2);
+  c.width = innerWidth * dpr; c.height = innerHeight * dpr; x.scale(dpr, dpr);
+  const cols = ["#fbfaf7", "#f7c948", "#141210", "#ff6a13"];
+  const bits = [];
+  const burst = (ox, dir) => { for (let i = 0; i < 90; i++) bits.push({
+    x: ox, y: innerHeight, vx: dir * rnd(2, 9), vy: -rnd(10, 19), r: rnd(0, 6), vr: rnd(-0.3, 0.3),
+    w: rnd(6, 12), h: rnd(9, 18), c: cols[i % 4], k: i % 5 }); };
+  burst(0, 1); burst(innerWidth, -1);
+  let t0 = performance.now();
+  (function tick(t) {
+    raf = requestAnimationFrame(tick);
+    if (t - t0 > 900 && bits.length < 420) { // then a gentle rain
+      for (let i = 0; i < 3; i++) bits.push({ x: rnd(0, innerWidth), y: -20, vx: rnd(-1, 1), vy: rnd(1, 3), r: rnd(0, 6), vr: rnd(-0.2, 0.2), w: rnd(6, 11), h: rnd(9, 16), c: cols[i % 4], k: i % 5 });
+    }
+    x.clearRect(0, 0, innerWidth, innerHeight);
+    for (const b of bits) {
+      b.vy += 0.32; b.vx *= 0.99; b.vy = Math.min(b.vy, 5.5); b.x += b.vx; b.y += b.vy; b.r += b.vr;
+      if (b.y > innerHeight + 40) continue;
+      x.save(); x.translate(b.x, b.y); x.rotate(b.r);
+      x.fillStyle = b.c; x.strokeStyle = "#141210"; x.lineWidth = 1.5;
+      if (b.k === 0) { x.beginPath(); x.arc(0, 0, b.w / 2, 0, 7); x.fill(); x.stroke(); }
+      else if (b.k === 1) { x.strokeStyle = b.c; x.lineWidth = 3; x.beginPath(); x.moveTo(-8, 0); x.quadraticCurveTo(-4, -7, 0, 0); x.quadraticCurveTo(4, 7, 8, 0); x.stroke(); }
+      else { x.fillRect(-b.w / 2, -b.h / 2, b.w, b.h); x.strokeRect(-b.w / 2, -b.h / 2, b.w, b.h); }
+      x.restore();
+    }
+    for (let i = bits.length - 1; i >= 0; i--) if (bits[i].y > innerHeight + 40 && bits[i].vy > 0) bits.splice(i, 1);
+  })(t0);
+}
+
+document.fonts && document.fonts.ready.then(() => ScrollTrigger.refresh());
+</script>
+</body>
+</html>
